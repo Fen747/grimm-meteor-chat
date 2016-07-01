@@ -1,4 +1,4 @@
-import './accounts/email-templates';
+import './accounts.js';
 import './browser-policy';
 import './fixtures';
-import './api';
+import './api.js';

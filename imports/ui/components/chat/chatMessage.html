@@ -1,0 +1,40 @@
+<template name="chatMessage">
+    {{#if roomId}}
+        <div class="room-name-contenair">
+            <h4>{{> userDisplay users=(getUsers roomId) showLocalTime=true }}</h4>
+
+        </div>
+
+        <div class="chatWrapper">
+            <div class="chat-scroll-alert-unread">Faites défiler vers le bas pour voir les nouveaux messages.</div>
+            <div class="chatScrollable">
+                    {{#each message in getMessages roomId }}
+                        <div class="message-contenair">
+                            <div class="chatAutor" data-tooltip-left="1" data-tooltip="{{ getUsername message.[0].ownerId }} {{ getTime message.[0].createdAt}}">
+                                <div class="avatar" style="background: url({{avatar 32 message.[0].md5hash}}); height: 32px; width: 32px;"></div>
+                            </div>
+                            <div class="message {{#if isMyMessage message.[0].ownerId }} myMessage {{ else }} otherMessage {{ /if}}">
+
+                                {{#each $mapped message}}
+                                    <div class="editMessage" data-id="{{ this._id }}">{{{ this.message }}}</div>
+                                    {{#if this.lastUpdatedHumanReadable }}
+                                        <div class="lastUpdated" data-id="{{ this._id }}">Last edited at {{ this.lastUpdatedHumanReadable }}</div>
+                                    {{/if}}
+                                {{/each}}
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                    {{/each}}
+            </div>
+        </div>
+
+            <div class="inputMessage">
+                <input type="hidden" id="roomId" value="{{ roomId }}" />
+                <div contenteditable="true" role="textbox" spellcheck="true" class="text-box" id="messageTextarea" data-placeholder="Write your message..."></div>
+
+                <span id="sendChatButton"><i class="fa fa-paper-plane"></i></span>
+            </div>
+
+        {{ > tooltips }}
+    {{/if}}
+</template>

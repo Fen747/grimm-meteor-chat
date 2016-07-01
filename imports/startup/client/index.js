@@ -1,6 +1,19 @@
-import { Bert } from 'meteor/themeteorchef:bert';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
 import './routes.js';
+import './template.js';
 
-Bert.defaults.style = 'growl-top-right';
+import '../../ui/layouts/login.html';
+import '../../ui/layouts/login.js';
+import '../../ui/layouts/loggedIn.html';
+import '../../ui/components/navbar/navbar.html';
+import '../../ui/components/home/home.html';
+import '../../ui/components/profile/editProfile.html';
+
+import '../../ui/components/chat/userDisplay.html';
+import '../../ui/components/chat/chat.html';
+import '../../ui/components/chat/chatRoomsBar.html';
+import '../../ui/components/chat/chatRoomsBar.js';
+import '../../ui/components/chat/chatMessage.html';
+import '../../ui/components/chat/chatMessage.js';
+import '../../ui/components/navbar/navbar.js';
+
+import '../../../client/extendJquery.js';

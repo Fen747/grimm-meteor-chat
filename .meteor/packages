@@ -7,7 +7,6 @@
 meteor-base             # Packages every Meteor app needs to have
 mobile-experience       # Packages for a great mobile UX
 mongo                   # The database Meteor supports right now
-blaze-html-templates    # Compile .html files into Meteor Blaze views
 reactive-var            # Reactive variable for tracker
 jquery                  # Helpful client-side library
 tracker                 # Meteor's client-side reactive programming library
@@ -20,6 +19,7 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 accounts-password
 accounts-base
+accounts-ui
 check
 audit-argument-checks
 browser-policy
@@ -29,4 +29,20 @@ aldeed:collection2
 alanning:roles
 themeteorchef:bert
 mdg:validated-method
-dburles:factory@1.0.0
+reactive-dict
+meteorhacks:unblock
+meteorhacks:subs-manager
+meteorhacks:inject-initial
+meteorhacks:zones
+kadira:flow-router
+kadira:blaze-layout
+mizzao:user-status
+erasaur:meteor-lodash
+twbs:bootstrap
+peerlibrary:blaze-components
+momentjs:moment
+raix:handlebar-helpers
+lookback:tooltips
+fortawesome:fontawesome
+jparker:gravatar
+session

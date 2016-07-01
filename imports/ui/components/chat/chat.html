@@ -1,0 +1,11 @@
+<template name="chat">
+    <div class="row chatWrapper">
+        <div class="chatRoomsBar col-xs-4">
+            {{> chatRoomsBar roomId=roomId}}
+        </div>
+
+        <div class="chatMessageContenair col-xs-8">
+            {{> chatMessage roomId=roomId}}
+        </div>
+    </div>
+</template>

@@ -1,0 +1,18 @@
+<template name="chatRoomsBar">
+    <h4>Messages</h4>
+    <div class="search-chat">
+        <input type="search" id="search-input-chat" placeholder="Filter..." />
+    </div>
+    <div id="search-no-result">
+        No result found !
+    </div>
+    {{#each room in rooms}}
+        <a class="oneRoom {{#if isRoomActive room.id roomId}}active{{/if}}" href="/chat/{{room.id}}">
+            <div class="avatar" style="background: url({{avatar 48 room.md5hash}}); height: 48px; width: 48px;"></div>
+            <div class="room-name">
+                {{> userDisplay users=room.users}}
+            </div>
+            <div class="room-last-activity">{{room.lastActivityHumanReadable}}</div>
+        </a>
+    {{/each}}
+</template>

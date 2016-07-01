@@ -1,0 +1,16 @@
+<template name="userDisplay">
+    {{#each user in users}}
+        <div class="user-chat">
+            {{#if isUserOnline user }}
+                <div class="user-status online"></div>
+            {{else}}
+                <div class="user-status offline"></div>
+            {{/if}}
+            {{getUsername user }}
+
+            {{#if showLocalTime}}
+                <div class="time">Local time:</div>
+            {{/if}}
+        </div>
+    {{/each}}
+</template>
