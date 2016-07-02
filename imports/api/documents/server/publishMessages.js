@@ -2,26 +2,26 @@ import {Messages} from '../../../collections/chat/messages.js';
 import {Rooms} from '../../../collections/chat/rooms.js';
 
 // Publications
-Meteor.publish( 'messages', function() {
-    myRooms = Rooms.find({
-        users: this.userId
-    });
+Meteor.publish( 'messages', function(roomId, limit) {
+    try {
+        check(roomId, String);
+        check(limit, Number);
 
-    roomsId = [];
-    myRooms.forEach(function(room) {
-        roomsId.push(room._id);
-    });
+        myRooms = Rooms.find({
+            users: this.userId
+        });
 
-    myMessages = Messages.find({
-        roomId: { $in: roomsId}
-    });
+        roomsId = [];
+        myRooms.forEach(function(room) {
+            roomsId.push(room._id);
+        });
 
-    return myMessages;
-});
+        myMessages = Messages.find({
+            roomId: { $in: roomsId}
+        });
 
-Messages.allow({
-    'insert': function (userId,doc) {
-      // @TODO Il faudrait vérifier ici que le user a le droit de poster dans cette room
-      return true;
+        return myMessages;
+    } catch(e) {
+        throw new Meteor.Error(500, 'unknow-error');
     }
-  });
+});

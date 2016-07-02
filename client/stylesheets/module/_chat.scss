@@ -3,6 +3,7 @@ $sizeConnectRound: 8px;
 $lightGray: lightgray;
 $talkGreen: green;
 
+
 div.user-status {
     $_rounded: $sizeConnectRound / 2;
     height: $sizeConnectRound;
@@ -52,6 +53,7 @@ div.chatScrollable {
     position: absolute;
     bottom: 0;
     overflow: auto;
+    width: 100%;
 }
 div.chatWrapper {
     position: relative;
@@ -186,6 +188,9 @@ div.text-box:focus{
     color: gray;
 }
 
+div.editMessage {
+    border: 1px solid transparent;
+}
 div.editMessage:hover {
     border: 1px dashed gray;
     cursor: text;

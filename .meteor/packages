@@ -11,33 +11,33 @@ reactive-var            # Reactive variable for tracker
 jquery                  # Helpful client-side library
 tracker                 # Meteor's client-side reactive programming library
 
-standard-minifier-css   # CSS minifier run for production mode
-standard-minifier-js    # JS minifier run for production mode
-es5-shim                # ECMAScript 5 compatibility for older browsers.
+#standard-minifier-css   # CSS minifier run for production mode
+#standard-minifier-js    # JS minifier run for production mode
+#es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 
 accounts-password
 accounts-base
-accounts-ui
+#accounts-ui
 check
 audit-argument-checks
 browser-policy
 
 fourseven:scss
-aldeed:collection2
-alanning:roles
+#aldeed:collection2
+#alanning:roles
+#meteorhacks:unblock
+#meteorhacks:subs-manager
+#meteorhacks:inject-initial
+#meteorhacks:zones
+#erasaur:meteor-lodash
 themeteorchef:bert
 mdg:validated-method
 reactive-dict
-meteorhacks:unblock
-meteorhacks:subs-manager
-meteorhacks:inject-initial
-meteorhacks:zones
 kadira:flow-router
 kadira:blaze-layout
 mizzao:user-status
-erasaur:meteor-lodash
 twbs:bootstrap
 peerlibrary:blaze-components
 momentjs:moment
@@ -46,3 +46,4 @@ lookback:tooltips
 fortawesome:fontawesome
 jparker:gravatar
 session
+gromo:jquery-scrollbar

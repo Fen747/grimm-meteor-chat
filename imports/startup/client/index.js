@@ -15,5 +15,3 @@ import '../../ui/components/chat/chatRoomsBar.js';
 import '../../ui/components/chat/chatMessage.html';
 import '../../ui/components/chat/chatMessage.js';
 import '../../ui/components/navbar/navbar.js';
-
-import '../../../client/extendJquery.js';
