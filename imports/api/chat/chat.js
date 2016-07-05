@@ -25,7 +25,7 @@ class Chat {
 
             return usernames.join(', ');
         }
-    };
+    }
 
     getUsername(user) {
             user = Meteor.users.findOne({
@@ -35,7 +35,7 @@ class Chat {
             });
 
             return (user) ? user.username : 'Someone';
-    };
+    }
 
     getRoomImageMD5(room) {
         room = this._getRoomObject(room);
@@ -51,7 +51,7 @@ class Chat {
         } else {
             // @TODO send some picture to simulate groups
         }
-    };
+    }
 
     getTime(timestamp) {
         if ( timestamp ) {
@@ -61,7 +61,7 @@ class Chat {
               format        = isBeforeToday ? 'MMMM Do, YYYY hh:mm a' : 'hh:mm a';
           return moment( timestamp ).format( format );
         }
-    };
+    }
 
     _getRoomObject(room) {
         if (typeof room === 'string') {
@@ -71,14 +71,14 @@ class Chat {
         }
 
         return room;
-    };
+    }
 
     _cleanUsers(_usersList) {
         let index = _usersList.indexOf(Meteor.userId());
         if (index > -1) {
             _usersList.splice(index, 1);
         }
-    };
+    }
 }
 
 this.Chat = new Chat();

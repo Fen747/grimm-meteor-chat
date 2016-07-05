@@ -7,7 +7,7 @@
         No result found !
     </div>
     {{#each room in rooms}}
-        <a class="oneRoom {{#if isRoomActive room.id roomId}}active{{/if}}" href="/chat/{{room.id}}">
+        <a class="oneRoom {{#if isRoomActive room.id}}active{{/if}}" href="/chat/{{room.id}}">
             <div class="avatar" style="background: url({{avatar 48 room.md5hash}}); height: 48px; width: 48px;"></div>
             <div class="room-name">
                 {{> userDisplay users=room.users}}

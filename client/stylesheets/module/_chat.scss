@@ -3,6 +3,8 @@ $sizeConnectRound: 8px;
 $lightGray: lightgray;
 $talkGreen: green;
 
+$iconRewrite: "\f040";
+
 
 div.user-status {
     $_rounded: $sizeConnectRound / 2;
@@ -134,8 +136,21 @@ div.myMessage {
     float: right;
 
     div.editMessage:hover {
+        position: relative;
+
         &:after {
-            float:left;
+            display:none;
+        }
+        &:before {
+            float: left;
+            color: $talkGreen;
+            position:absolute;
+            left: -25px;
+            content: $iconRewrite;
+            font-family: FontAwesome;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: inherit;
         }
     }
 }
@@ -152,13 +167,10 @@ div.chatAutor {
 div.inputMessage {
     background-color: white;
     border: 1px solid $lightGray;
-    direction: rtl;
-    max-height: 100px;
-    overflow-y: auto;
-    overflow-x: hidden;
 
-    span#sendChatButton {
+    span.send-chat-button {
         padding: 8px;
+        padding-top: 12px;
         cursor:pointer;
         float: right;
         width: 32px;
@@ -176,7 +188,9 @@ div.text-box {
     border-radius: 0px;
     margin: 7px;
     cursor: text;
-    direction: ltr;
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div.text-box:focus{
@@ -198,7 +212,10 @@ div.editMessage:hover {
 
     &:after {
         float: right;
-        content: "\f044";
+        color: $talkGreen;
+        position:relative;
+        left: 25px;
+        content: $iconRewrite;
         font-family: FontAwesome;
         font-style: normal;
         font-weight: normal;

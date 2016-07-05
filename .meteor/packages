@@ -31,9 +31,10 @@ fourseven:scss
 #meteorhacks:subs-manager
 #meteorhacks:inject-initial
 #meteorhacks:zones
-#erasaur:meteor-lodash
+erasaur:meteor-lodash
 themeteorchef:bert
 mdg:validated-method
+mrt:smart-publish
 reactive-dict
 kadira:flow-router
 kadira:blaze-layout

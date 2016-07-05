@@ -56,6 +56,7 @@ loggedIn_Routes.route('/chat/:roomId', {
   name: 'chatRoom',
   triggersEnter: [],
   action: function(query, queryParams) {
-    BlazeLayout.render('loggedIn', { content: 'chat', roomId: query.roomId});
+      Session.set('roomId', query.roomId)
+    BlazeLayout.render('loggedIn', { content: 'chat'});
   }
 });

@@ -50,11 +50,14 @@ Meteor.methods({
                 messageId: messageId,
                 ownerId: this.userId,
                 createdAt: date,
-            }
+            };
+
             MessagesRewrite.insert(message);
 
             return true;
         } catch(e) {
+            console.log(e);
+
             throw new Meteor.Error(500, 'unknow-error');
         }
     },

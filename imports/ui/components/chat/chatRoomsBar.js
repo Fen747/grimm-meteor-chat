@@ -63,8 +63,8 @@ class chatRoomsBar extends BlazeComponent {
     }
   }
 
-  isRoomActive(roomId, roomSelected) {
-      if (roomId == roomSelected) {
+  isRoomActive(roomSelected) {
+      if (Session.get('roomId') == roomSelected) {
           return true;
       }
       return false;

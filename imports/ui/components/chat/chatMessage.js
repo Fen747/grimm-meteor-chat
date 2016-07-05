@@ -1,133 +1,72 @@
 import { Messages } from '../../../collections/chat/messages.js';
 import { Rooms } from '../../../collections/chat/rooms.js';
 import '../../../api/chat/chat.js';
+import '../../../api/chat/chatScroll.js';
+
+varGlob = null;
 
 class chatMessage extends BlazeComponent {
     constructor() {
         super();
 
         this._lastOwnerId = '';
-        this.limitMessage = new ReactiveVar(25);
+        this.roomsSubscribed = {};
+        this.cursorMessages = Messages.find();
+        this._loadMoreMessage = _.throttle(function() {
+               let scrollableElement = this.find('.scroll-content');
+
+               if (scrollableElement.scrollHeight > scrollableElement.clientHeight) {
+                   let roomIdReactiveVar = this.roomsSubscribed[Session.get('roomId')];
+                   roomIdReactiveVar.set(roomIdReactiveVar.get()+1);
+
+                   this.callSubscribeMessages();
+               }
+           }, 500, { 'trailing': false });
     }
 
   // Life-cycle hook to initialize component's state.
   onCreated(e) {
     // It is a good practice to always call super.
     super.onCreated();
-    self = this;
+    self = varGlob = this;
 
     this.lastHeightMessages = 0;
 
-    $(window).resize(function() {
-      let height = $(window).height() - $('.navbar').height() - $('.room-name-contenair').height() - 49;
+    ChatScroll.initializeResize(this);
 
-      $('.chatScrollable').css('max-height', height+'px');
-       $('.chatWrapper').css('height', height+'px');
+    this.autorun(function(){
+        let roomId = Session.get('roomId');
 
-      self.updateScrollMessage(true);
+        if (this.roomId != roomId) {
+            this.roomId = roomId;
+
+            console.log('---- reset context for '+this.roomId+' ----');
+            // @TODO CONSTANTE
+            self.firstTopCancel = false;
+            //self.limitMessage.set(1);
+            self.callSubscribeMessages();
+        }
     });
   }
 
   onRendered(e) {
       super.onRendered();
-     self = this;
-
-     // observe scroll to reset scroll alert
-     $('.chatScrollable').on('scroll', function() {
-         if (self._isScrollBot(this)) {
-            self._setScrollAlert('hide', self);
-        }
-        if (self._isScrollTop(this)) {
-             self.limitMessage.set(self.limitMessage.get()+20);
-        }
-    }).scrollbar();
-
-     this.autorun(function () {
-       let roomId = Template.currentData().roomId;
-
-       self.countMessage = 0;
-
-       console.log('---- reset context ----');
-
-       self.messagesHandler = Meteor.subscribe('messages', roomId, self.limitMessage.get());
-       Meteor.subscribe('messages_rewrite');
-
-       self.updateScrollMessage(false);
-     });
+      this.scrollEvent = ChatScroll.initializeScroll(this);
   }
 
-  updateScrollMessage(fromResize) {
-      let messageContenair = $('.chatWrapper');
-      let doScroll = false;
-      let scrollableElement = this.find('.chatScrollable');
-      let cancelShowAlert = false;
-
-      if (this._isScrollBot(scrollableElement)) {
-          // Update now, because he read the last messages
-          // @TODO some improvements :
-          doScroll = true;
-      }
-
-      if (this.lastHeightMessages != scrollableElement.scrollHeight) {
-          // we must calculate the compensation to keep the scrool
-          let difference = scrollableElement.scrollHeight - this.lastHeightMessages;
-
-          scrollableElement.scrollTop = scrollableElement.scrollTop + difference;
-          this.lastHeightMessages = scrollableElement.scrollHeight;
-
-          if (!doScroll) {
-              // Si on avait pas planifier de scroller en bas, on annule l'affichage de la notification de nouveau message
-              cancelShowAlert = true;
+  callSubscribeMessages() {
+      if (this.roomId) {
+          // Have we read this room already ?
+          if (!(this.roomId in this.roomsSubscribed)) {
+              // No, so please initialize this roomsSubscribed
+              this.roomsSubscribed[this.roomId] = new ReactiveVar(1);
           }
-      }
 
-      if (doScroll && scrollableElement) {
-          this._setScrollBarBottom(scrollableElement);
-          this._setScrollAlert('hide', this);
-      } else {
-          if (!cancelShowAlert) {
-              this._setScrollAlert('show', this);
-          }
-      }
-  }
-
-  _isScrollBot(scrollableElement) {
-      if (scrollableElement) {
-          //console.log((scrollableElement.scrollTop + scrollableElement.clientHeight + 20),  scrollableElement.scrollHeight, scrollableElement.offsetHeight);
-
-          return ((scrollableElement.scrollTop + scrollableElement.clientHeight + 20 ) >= scrollableElement.scrollHeight) ? true : false;
-      } else {
-          return false;
-      }
-  }
-
-  _isScrollTop(scrollableElement) {
-      if (scrollableElement) {
-          return ((scrollableElement.scrollTop + scrollableElement.clientHeight ) <= scrollableElement.offsetHeight) ? true : false;
-      } else {
-          return false;
-      }
-  }
-
-  _setScrollBarBottom(scrollableElement) {
-      if (scrollableElement) {
-          $(scrollableElement).scrollTop(999999);
+          this.messageHandler = Meteor.subscribe('messages', this.roomsSubscribed);
       }
   }
 
 
-
-  _setScrollAlert(value, context) {
-       let scrollAlert = context.find('.chat-scroll-alert-unread');
-
-       if (scrollAlert) {
-           if (value == 'show') {
-               $(scrollAlert).show('slow');
-           } else {
-                $(scrollAlert).hide('slow');
-           }
-       }
-  }
 
   // Mapping between events and their handlers.
   events() {
@@ -135,7 +74,7 @@ class chatMessage extends BlazeComponent {
     return super.events().concat({
       'click #sendChatButton': this.addMessage,
       'click .editMessage': this.startMessageRewrite,
-      'click .sendRewriteChatButton': this.addMessageRewrite,
+      'click #sendRewriteChatButton': this.addMessageRewrite,
       'keypress #messageTextarea': this.handleAddMessage,
       'keydown #message-rewrite-textarea': this.handleAddMessageRewrite
     });
@@ -168,36 +107,34 @@ class chatMessage extends BlazeComponent {
       return [];
   }
 
-  getMessages(roomId) {
-      if (1) {
+  getMessages() {
+      let roomId = Session.get('roomId');
+
+      if (this.roomsSubscribed[roomId]) {
           let self = this;
+          let myLimit = 50 * this.roomsSubscribed[roomId].get();
+
           let startResize = true;
-          let messages = Messages.find({
+          this.cursorMessages = Messages.find({
               roomId: roomId
           },{
               sort: { createdAt: -1 },
-              limit: self.limitMessage.get()
+              limit: myLimit
           });
 
-
-          messages.observeChanges({
+          this.cursorMessages.observeChanges({
               addedBefore: function(id, field, before) {
-                  if (before) {
-                      self.countMessage++;
-                      self.limitMessage.set(self.countMessage + self.limitMessage.get());
-                  }
-
                   if (startResize) {
                       Tracker.afterFlush(function(){
                           // check if the guy read some text upper than convers
-                          console.log("start resize !");
-
                           $(window).resize();
                       });
                       startResize = false;
                   }
               },
           });
+
+          let messages = this.cursorMessages;
 
           if ( messages ) {
               // On va générer le nom des rooms en fonction des utilisateurs présent dans la room
@@ -233,7 +170,6 @@ class chatMessage extends BlazeComponent {
           }
       } else {
           console.log("subscribe not ready");
-
       }
   }
 
@@ -251,7 +187,7 @@ class chatMessage extends BlazeComponent {
   }
 
   handleAddMessageRewrite(e) {
-      if (e.which === 13) {
+      if (e.which === 13 && !event.shiftKey) {
           e.stopPropagation();
           e.preventDefault();
           this.addMessageRewrite(e);
@@ -260,23 +196,40 @@ class chatMessage extends BlazeComponent {
   }
 
   startMessageRewrite(e) {
+      let self = this;
+
+      // Close all other edit essage !
+      $('.editingInProgress').each(function(){
+          self._cancelMessageRewrite(this);
+      });
+
+
+      // Start edit this message
       if (!$(e.target).hasClass('editingInProgress')) {
           $(e.target).addClass('editingInProgress').removeClass('editMessage');
 
-          let contenair = $('<div class="inputMessage input-group contenair-rewrite" />');
-          let editor = $('<textarea id="message-rewrite-textarea" class="form-control" required />');
-          let sendButton = $('<span class="input-group-addon btn btn-primary sendRewriteChatButton"><i class="fa fa-paper-plane"></i></span>');
+          let contenair = $('<div class="inputMessage contenair-rewrite" />');
+          let editor = $('<div contenteditable id="message-rewrite-textarea" class="text-box" />');
+          let sendButton = $('<span id="sendRewriteChatButton" class="send-chat-button"><i class="fa fa-paper-plane"></i></span>');
 
           contenair.append(editor).append(sendButton);
-          editor.val(e.target.innerHTML);
+          editor.html(e.target.innerHTML);
           $(e.target).html(contenair);
           editor.focus();
+
+          // check if the user cancel edition
+          $(document).on('click.cancelRewrite', function(e){
+            if($(e.target).closest('.editingInProgress').size() === 0){
+                $(document).off('click.cancelRewrite');
+                self._cancelMessageRewrite($('.editingInProgress'));
+            }
+        });
       }
   }
 
   addMessageRewrite(e) {
       let message = {
-          message: $(e.target).parent().find('textarea').val(),
+          message: $(e.target).parent().find('div#message-rewrite-textarea').html(),
           messageId: $(e.target).parent().parent().attr('data-id'),
       };
       let self = this;
@@ -286,23 +239,23 @@ class chatMessage extends BlazeComponent {
           if (!error) {
               self._endMessageRewrite(e);
           }
+          console.log(error);
+
       });
   }
 
   addMessage() {
       let oMessage = this.find('#messageTextarea');
-
+      let self = this;
       let message = {
           message: this.find('#messageTextarea').innerHTML,
-          roomId: this.find('#roomId').value
+          roomId: this.roomId
       };
-
-      let self = this;
 
       Meteor.call('message.insert', message, function(error) {
           if (!error) {
               oMessage.innerHTML = '';
-              self._setScrollBarBottom(self.find('.chatScrollable'));
+              ChatScroll.setScrollBarBottom(self.find('.scroll-content'));
           } else {
               console.log(error);
           }
@@ -318,6 +271,17 @@ class chatMessage extends BlazeComponent {
 
       // reinsert the new message
       $(e.target).parent().parent().html($(e.target).parent().find('#messageTextarea').value);
+  }
+
+  _cancelMessageRewrite(context) {
+      // Cancel this message rewrite !
+      $(context).removeClass('editingInProgress').addClass('editMessage');
+
+      // Override the content of message by the mongo doScroll
+      let messageText = Messages.findOne({_id: $(context).attr('data-id')});
+      if (messageText) {
+          $(context).html(messageText.message);
+      }
   }
 }
 

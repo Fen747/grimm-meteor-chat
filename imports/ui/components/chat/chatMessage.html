@@ -8,7 +8,7 @@
         <div class="chatWrapper">
             <div class="chat-scroll-alert-unread">Faites défiler vers le bas pour voir les nouveaux messages.</div>
             <div class="chatScrollable">
-                    {{#each message in getMessages roomId }}
+                    {{#each message in getMessages}}
                         <div class="message-contenair">
                             <div class="chatAutor" data-tooltip-left="1" data-tooltip="{{ getUsername message.[0].ownerId }} {{ getTime message.[0].createdAt}}">
                                 <div class="avatar" style="background: url({{avatar 32 message.[0].md5hash}}); height: 32px; width: 32px;"></div>
@@ -29,10 +29,10 @@
         </div>
 
             <div class="inputMessage">
-                <input type="hidden" id="roomId" value="{{ roomId }}" />
+                <input type="hidden" id="roomId" value="{{ $.Session.get 'roomId' }}" />
                 <div contenteditable="true" role="textbox" spellcheck="true" class="text-box" id="messageTextarea" data-placeholder="Write your message..."></div>
 
-                <span id="sendChatButton"><i class="fa fa-paper-plane"></i></span>
+                <span id="sendChatButton" class="send-chat-button"><i class="fa fa-paper-plane"></i></span>
             </div>
     {{/if}}
 </template>
